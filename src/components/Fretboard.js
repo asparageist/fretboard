@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import './Fretboard.css';
 
 const strings = ['E', 'A', 'D', 'G', 'B', 'e'];
+const openNotes = ['E', 'A', 'D', 'G', 'B', 'E']; // high e is also E
 const numFrets = 13;
 const dotFrets = [2, 4, 6, 8, 11]; // 3, 5, 7, 9, 12 (zero-based)
+
+const chromatic = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 // Calculate fret widths using geometric progression
 const initialFretWidth = 70; // px
@@ -14,9 +17,11 @@ const Fretboard = () => {
   const [leftHanded, setLeftHanded] = useState(false);
 
   // Mirror fret number for left-handed mode
-  const handleFretClick = (stringIndex, fretIndex) => {
-    const logicalFret = leftHanded ? numFrets - 1 - fretIndex : fretIndex;
-    console.log(`Clicked string ${strings[stringIndex]} at fret ${logicalFret}`);
+  const handleFretClick = (stringIndex, logicalFret) => {
+    const openNote = openNotes[stringIndex];
+    const openIndex = chromatic.indexOf(openNote);
+    const note = chromatic[(openIndex + logicalFret) % 12];
+    console.log(`String ${strings[stringIndex]}, Fret ${logicalFret}: ${note}`);
   };
 
   // For left-handed, reverse the fret widths so the widest is on the right
@@ -77,15 +82,18 @@ const Fretboard = () => {
           <div key={string} className="string-row">
             <div className="string-label">{string}</div>
             <div className="string">
-              {displayFretWidths.map((width, fretIndex) => (
-                <button
-                  key={`${string}-${fretIndex}`}
-                  className="fret"
-                  style={{ width: `${width}px` }}
-                  onClick={() => handleFretClick(stringIndex, fretIndex)}
-                >
-                </button>
-              ))}
+              {displayFretWidths.map((width, fretIndex) => {
+                const logicalFret = leftHanded ? numFrets - 1 - fretIndex : fretIndex;
+                return (
+                  <button
+                    key={`${string}-${fretIndex}`}
+                    className="fret"
+                    style={{ width: `${width}px` }}
+                    onClick={() => handleFretClick(stringIndex, logicalFret)}
+                  >
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}
