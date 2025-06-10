@@ -3,20 +3,19 @@ import './Fretboard.css';
 
 const strings = ['E', 'A', 'D', 'G', 'B', 'e'];
 const openNotes = ['E', 'A', 'D', 'G', 'B', 'E']; // high e is also E
-const numFrets = 13;
-const dotFrets = [2, 4, 6, 8, 11]; // 3, 5, 7, 9, 12 (zero-based)
+const numFrets = 14;
+const dotFrets = [3, 5, 7, 9, 12]; // 3, 5, 7, 9, 12 (zero-based)
 
 const chromatic = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 // Calculate fret widths using geometric progression
-const initialFretWidth = 70; // px
+const initialFretWidth = 90; // px
 const ratio = 0.95;
 const fretWidths = Array.from({ length: numFrets }, (_, i) => initialFretWidth * Math.pow(ratio, i));
 
 const Fretboard = () => {
   const [leftHanded, setLeftHanded] = useState(false);
 
-  // Mirror fret number for left-handed mode
   const handleFretClick = (stringIndex, logicalFret) => {
     const openNote = openNotes[stringIndex];
     const openIndex = chromatic.indexOf(openNote);
@@ -28,7 +27,7 @@ const Fretboard = () => {
   const displayFretWidths = leftHanded ? [...fretWidths].reverse() : fretWidths;
 
   // Calculate left positions for dots based on displayFretWidths
-  const getFretLefts = (widths, leftPad = 49) =>
+  const getFretLefts = (widths, leftPad = 9) =>
     widths.reduce((acc, width, i) => {
       acc.push((acc[i - 1] || leftPad) + (i > 0 ? widths[i - 1] : 0));
       return acc;
@@ -45,11 +44,19 @@ const Fretboard = () => {
     : dotFrets;
 
   // Determine which fret should have double dots
-  const doubleDotFret = leftHanded ? numFrets - 1 - 11 : 11;
+  const doubleDotFret = leftHanded ? numFrets - 1 - 12 : 12;
 
   return (
     <div className="fretboard-container">
       <div className="fretboard fretboard-with-dots">
+        <div
+          className="nut"
+          style={
+            leftHanded
+            ? { left: 'auto', right: (displayFretWidths[displayFretWidths.length - 1] + 2) + 'px' } // +2 adjusts pixel position
+            : { left: displayFretWidths[0] + 'px', right: 'auto' }
+          }
+        />
         {/* Fret dots as absolutely positioned overlays */}
         {displayDotFrets.map((fretIndex) => {
           const left = displayFretLefts[fretIndex] + displayFretWidths[fretIndex] / 2 - 7;
@@ -80,14 +87,14 @@ const Fretboard = () => {
         {/* Strings and frets */}
         {strings.map((string, stringIndex) => (
           <div key={string} className="string-row">
-            <div className="string-label">{string}</div>
+            {/* <div className="string-label">{string}</div> */}
             <div className="string">
               {displayFretWidths.map((width, fretIndex) => {
                 const logicalFret = leftHanded ? numFrets - 1 - fretIndex : fretIndex;
                 return (
                   <button
                     key={`${string}-${fretIndex}`}
-                    className="fret"
+                    className={`fret${logicalFret === 0 ? ' open-string' : ''}`}
                     style={{ width: `${width}px` }}
                     onClick={() => handleFretClick(stringIndex, logicalFret)}
                   >

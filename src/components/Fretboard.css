@@ -75,8 +75,13 @@
   background: transparent;
   cursor: pointer;
   position: relative;
-  z-index: 4;
+  z-index: 2;
   color: #e0e0e0;
+}
+
+.fret.open-string {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 .fret::after {
@@ -91,8 +96,20 @@
 
 .fret:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  border: 3px solid #555;
 }
 
 .string:last-child .fret:last-child::after {
   display: none;
+}
+
+.nut {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  background: #e0e0e0;
+  border-radius: 2px;
+  z-index: 5;
 } 
