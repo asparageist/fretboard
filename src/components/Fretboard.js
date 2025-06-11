@@ -3,6 +3,14 @@ import './Fretboard.css';
 
 const strings = ['E', 'A', 'D', 'G', 'B', 'e'];
 const openNotes = ['E', 'A', 'D', 'G', 'B', 'E']; // high e is also E
+const stringTunings = [
+  { note: 'E', octave: 2 }, // Low E
+  { note: 'A', octave: 2 },
+  { note: 'D', octave: 3 },
+  { note: 'G', octave: 3 },
+  { note: 'B', octave: 3 },
+  { note: 'E', octave: 4 }, // High e
+];
 const numFrets = 14;
 const dotFrets = [3, 5, 7, 9, 12]; // 3, 5, 7, 9, 12 (zero-based)
 
@@ -13,14 +21,28 @@ const initialFretWidth = 90; // px
 const ratio = 0.95;
 const fretWidths = Array.from({ length: numFrets }, (_, i) => initialFretWidth * Math.pow(ratio, i));
 
+function getNoteWithOctave(openNote, openOctave, fret) {
+  let noteIndex = chromatic.indexOf(openNote);
+  let octave = openOctave;
+  let currentIndex = noteIndex;
+  for (let i = 0; i < fret; i++) {
+    currentIndex++;
+    if (currentIndex === 12) {
+      currentIndex = 0;
+      octave++;
+    }
+  }
+  return chromatic[currentIndex] + octave;
+}
+
 const Fretboard = () => {
   const [leftHanded, setLeftHanded] = useState(false);
 
+  // Mirror fret number for left-handed mode
   const handleFretClick = (stringIndex, logicalFret) => {
-    const openNote = openNotes[stringIndex];
-    const openIndex = chromatic.indexOf(openNote);
-    const note = chromatic[(openIndex + logicalFret) % 12];
-    console.log(`String ${strings[stringIndex]}, Fret ${logicalFret}: ${note}`);
+    const { note, octave } = stringTunings[stringIndex];
+    const noteWithOctave = getNoteWithOctave(note, octave, logicalFret);
+    console.log(`String ${strings[stringIndex]}, Fret ${logicalFret}: ${noteWithOctave}`);
   };
 
   // For left-handed, reverse the fret widths so the widest is on the right
@@ -87,7 +109,6 @@ const Fretboard = () => {
         {/* Strings and frets */}
         {strings.map((string, stringIndex) => (
           <div key={string} className="string-row">
-            {/* <div className="string-label">{string}</div> */}
             <div className="string">
               {displayFretWidths.map((width, fretIndex) => {
                 const logicalFret = leftHanded ? numFrets - 1 - fretIndex : fretIndex;
