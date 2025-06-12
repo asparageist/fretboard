@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Fretboard.css';
+import useFretTone from './FretTone';
 
 const strings = ['E', 'A', 'D', 'G', 'B', 'e'];
 const openNotes = ['E', 'A', 'D', 'G', 'B', 'E'];
@@ -36,12 +37,16 @@ function getNoteWithOctave(openNote, openOctave, fret) {
 
 const Fretboard = ({ isLeftHanded: initialLeftHanded = false }) => {
   const [leftHanded] = useState(initialLeftHanded);
+  const { playNote } = useFretTone();
 
   // Mirror fret number for left-handed mode
   const handleFretClick = (stringIndex, logicalFret) => {
     const { note, octave } = stringTunings[stringIndex];
     const noteWithOctave = getNoteWithOctave(note, octave, logicalFret);
     console.log(`String ${strings[stringIndex]}, Fret ${logicalFret}: ${noteWithOctave}`);
+    
+    // Play the note
+    playNote(noteWithOctave);
   };
 
   // For left-handed
@@ -80,10 +85,9 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false }) => {
             }
           />
           {displayDotFrets.map((fretIndex) => {
-            // Calculate dot position based on fret index
             const fretPosition = displayFretLefts[fretIndex];
             const fretWidth = displayFretWidths[fretIndex];
-            const left = fretPosition + (fretWidth / 2) - 0.7; // Center dot on fret
+            const left = fretPosition + (fretWidth / 2) - 0.7;
 
             if (fretIndex === doubleDotFret) {
               return (
