@@ -1,36 +1,47 @@
 .fretboard-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
   background-color: #1a1a1a;
-  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.fretboard-content {
+  position: relative;
+  width: 80vmin;
+  height: 80vmin;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .fretboard {
   display: flex;
   flex-direction: column-reverse;
-  border: 2px solid #444;
-  padding: 10px;
+  border: 0.2vmin solid #444;
+  padding: 1vmin;
   background-color: #2d2d2d;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border-radius: 0.5vmin;
+  box-shadow: 0 0 1vmin rgba(0, 0, 0, 0.3);
   position: relative;
 }
 
 .fret-dot {
-  width: 14px;
-  height: 14px;
+  width: 1.4vmin;
+  height: 1.4vmin;
   background: #e0e0e0;
   border-radius: 50%;
   margin: 0 auto;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  box-shadow: 0 0.1vmin 0.4vmin rgba(0,0,0,0.4);
 }
 
 .fret-dot.absolute-dot {
   position: absolute;
-  width: 14px;
-  height: 14px;
+  width: 1.4vmin;
+  height: 1.4vmin;
   background-color: #e0e0e0;
   border-radius: 50%;
   z-index: 5;
@@ -39,7 +50,7 @@
 .string-row {
   display: flex;
   align-items: center;
-  height: 40px;
+  height: 6vmin;
 }
 
 .string-label {
@@ -66,13 +77,12 @@
   left: 0;
   right: 0;
   top: 50%;
-  height: 2px;
+  height: 0.2vmin;
   background-color: #666;
   z-index: 2;
 }
 
 .fret {
-  width: 60px;
   height: 100%;
   border: none;
   background: transparent;
@@ -93,13 +103,13 @@
   right: 0;
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: 0.2vmin;
   background-color: #444;
 }
 
 .fret:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  border: 3px solid #555;
+  border: 0.3vmin solid #555;
 }
 
 .string:last-child .fret:last-child::after {
@@ -110,10 +120,10 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 8px;
+  width: 0.8vmin;
   height: 100%;
   background: #e0e0e0;
-  border-radius: 2px;
+  border-radius: 0.2vmin;
   z-index: 5;
 }
 
