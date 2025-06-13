@@ -3,18 +3,35 @@ import * as Tone from 'tone';
 
 // Custom hook for audio functionality
 const useFretTone = () => {
-  // Create a synthesizer instance
+  // Create a synthesizer instance with guitar-like settings
   const synth = new Tone.PolySynth(Tone.Synth, {
     oscillator: {
-      type: 'sine' // Basic waveform type
+      type: 'triangle', // Options: 'sine', 'square', 'sawtooth', 'triangle'
+      // You can also use 'custom' and provide a custom waveform
     },
     envelope: {
-      attack: 0.02,  // How quickly the note starts
-      decay: 0.1,    // How quickly it fades to sustain level
-      sustain: 0.3,  // The level it maintains while held
-      release: 1     // How quickly it fades out when released
+      attack: 0.005,  // Very quick attack for plucked sound
+      decay: 0.1,     // Quick decay
+      sustain: 0.3,   // Moderate sustain
+      release: 0.5    // Moderate release
+    },
+    // Add a filter for more guitar-like tone
+    filter: {
+      type: 'lowpass',
+      frequency: 2000, // Cut off high frequencies
+      rolloff: -12,    // Filter slope
+      Q: 1            // Resonance
     }
-  }).toDestination(); // Connect to the audio output
+  }).toDestination();
+
+  // Add some effects for more realistic sound
+  const reverb = new Tone.Reverb({
+    decay: 1.5,      // Reverb decay time
+    wet: 0.3         // Mix of dry/wet signal
+  }).toDestination();
+
+  // Connect synth to reverb
+  synth.connect(reverb);
 
   // Initialize Tone.js
   useEffect(() => {
@@ -30,7 +47,8 @@ const useFretTone = () => {
     // Cleanup function
     return () => {
       document.removeEventListener('click', startAudio);
-      synth.dispose(); // Clean up the synthesizer
+      synth.dispose();
+      reverb.dispose();
     };
   }, []);
 

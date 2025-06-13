@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
-import Fretboard from './components/Fretboard';
 import Splash from './components/Splash';
+import NoteFinding from './components/NoteFinding';
 
 function App() {
   const [showFretboard, setShowFretboard] = useState(false);
@@ -18,7 +18,7 @@ function App() {
         {!showFretboard ? (
           <Splash onStart={handleStart} />
         ) : (
-          <Fretboard isLeftHanded={options.isLeftHanded} />
+          <NoteFinding isLeftHanded={options.isLeftHanded} />
         )}
       </main>
     </div>

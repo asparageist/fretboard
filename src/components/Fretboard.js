@@ -35,7 +35,7 @@ function getNoteWithOctave(openNote, openOctave, fret) {
   return chromatic[currentIndex] + octave;
 }
 
-const Fretboard = ({ isLeftHanded: initialLeftHanded = false }) => {
+const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick }) => {
   const [leftHanded] = useState(initialLeftHanded);
   const { playNote } = useFretTone();
 
@@ -47,6 +47,11 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false }) => {
     
     // Play the note
     playNote(noteWithOctave);
+    
+    // Call the parent's onFretClick if provided
+    if (onFretClick) {
+      onFretClick(noteWithOctave);
+    }
   };
 
   // For left-handed

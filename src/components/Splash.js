@@ -23,12 +23,17 @@ function Splash({ onStart }) {
             </button>
           </div>
           <button className="start-button" onClick={handleStart}>
-            BEGIN!
+            Find Notes
           </button>
         </div>
       </div>
+      <div className="modeInfo">
+        <p>describe the mode</p>
+      </div>
     </div>
+    
   );
+  
 }
 
 export default Splash; 

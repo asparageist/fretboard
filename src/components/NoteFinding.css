@@ -1,0 +1,66 @@
+.note-finding-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.target-note {
+  position: absolute;
+  top: 2vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  padding: 2vmin;
+  background-color: #2d2d2d;
+  border-radius: 1vmin;
+  width: 100%;
+  max-width: 80vmin;
+  z-index: 10;
+}
+
+.target-note h2 {
+  color: #ddd;
+  font-size: 3vmin;
+  margin-bottom: 2vmin;
+}
+
+.note-display {
+  font-size: 8vmin;
+  font-weight: bold;
+  color: #ddd;
+  padding: 2vmin 4vmin;
+  border-radius: 1vmin;
+  background-color: #2d2d2d;
+  transition: all 0.3s ease;
+}
+
+.note-display.correct {
+  background-color: #2d5a27;
+  color: #fff;
+}
+
+.note-display.incorrect {
+  background-color: #5a2727;
+  color: #fff;
+}
+
+.feedback {
+  margin-top: 2vmin;
+  font-size: 3vmin;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.feedback.correct {
+  color: #4CAF50;
+}
+
+.feedback.incorrect {
+  color: #f44336;
+} 
