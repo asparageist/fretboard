@@ -1,0 +1,13 @@
+.coming-soon {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #1a1a1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ddd;
+  font-size: 3vmin;
+  text-align: center;
+  padding: 2vmin;
+}
