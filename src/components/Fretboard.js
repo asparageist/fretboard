@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Fretboard.css';
-import useFretTone from './FretTone';
+import { useFretTone } from './FretTone';
 
 const strings = ['E', 'A', 'D', 'G', 'B', 'e'];
 const openNotes = ['E', 'A', 'D', 'G', 'B', 'E'];
@@ -35,9 +35,9 @@ function getNoteWithOctave(openNote, openOctave, fret) {
   return chromatic[currentIndex] + octave;
 }
 
-const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick }) => {
+const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synthSettings }) => {
   const [leftHanded] = useState(initialLeftHanded);
-  const { playNote } = useFretTone();
+  const { playNote } = useFretTone(synthSettings);
 
   // Mirror fret number for left-handed mode
   const handleFretClick = (stringIndex, logicalFret) => {

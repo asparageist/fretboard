@@ -1,56 +1,49 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import * as Tone from 'tone';
 
 // Custom hook for audio functionality
-const useFretTone = () => {
-  // Create a synthesizer instance with guitar-like settings
-  const synth = new Tone.PolySynth(Tone.Synth, {
-    oscillator: {
-      type: 'sawtooth', // Options: 'sine', 'square', 'sawtooth', 'triangle'
-      // You can also use 'custom' and provide a custom waveform
-      //TODO: add a waveform selector button
-    },
-    envelope: {
-      attack: 0.005,  // Very quick attack for plucked sound
-      decay: 0.5,     // Quick decay
-      sustain: 0.5,   // Moderate sustain
-      release: 1    // Moderate release
-    },
-    // Add a filter for more guitar-like tone
-    filter: {
-      type: 'lowpass',
-      frequency: 2000, // Cut off high frequencies
-      rolloff: -12,    // Filter slope
-      Q: 1            // Resonance
-    }
-  }).toDestination();
+const useFretTone = (synthSettings) => {
+  const synthRef = React.useRef();
+  const reverbRef = React.useRef();
 
-  // Add some effects for more realistic sound
-  const reverb = new Tone.Reverb({
-    decay: 2,      // Reverb decay time
-    wet: 0.3         // Mix of dry/wet signal
-  }).toDestination();
-
-  // Connect synth to reverb
-  synth.connect(reverb);
+  useEffect(() => {
+    // Clean up previous synth/reverb
+    if (synthRef.current) synthRef.current.dispose();
+    if (reverbRef.current) reverbRef.current.dispose();
+    // Create new synth and reverb with current settings
+    synthRef.current = new Tone.PolySynth(Tone.Synth, {
+      oscillator: {
+        type: synthSettings?.oscType || 'sawtooth',
+      },
+      envelope: synthSettings?.envelope || {
+        attack: 0.005,
+        decay: 0.5,
+        sustain: 0.5,
+        release: 1,
+      },
+      filter: {
+        type: 'lowpass',
+        frequency: 2000,
+        rolloff: -12,
+        Q: 1
+      }
+    }).toDestination();
+    reverbRef.current = new Tone.Reverb({ decay: 2, wet: 0.3 }).toDestination();
+    synthRef.current.connect(reverbRef.current);
+    return () => {
+      if (synthRef.current) synthRef.current.dispose();
+      if (reverbRef.current) reverbRef.current.dispose();
+    };
+  }, [synthSettings]);
 
   // Initialize Tone.js
   useEffect(() => {
-    // Start the audio context on first user interaction
     const startAudio = async () => {
       await Tone.start();
       console.log('Audio context started');
     };
-
-    // Add click listener to start audio
     document.addEventListener('click', startAudio, { once: true });
-
-    // Cleanup function
-    return () => {
-      document.removeEventListener('click', startAudio);
-      synth.dispose();
-      reverb.dispose();
-    };
+    return () => document.removeEventListener('click', startAudio);
   }, []);
 
   // Function to play a note
@@ -59,10 +52,8 @@ const useFretTone = () => {
       console.log('Audio context not started');
       return;
     }
-
     try {
-      // Trigger the note attack
-      synth.triggerAttackRelease(note, duration);
+      if (synthRef.current) synthRef.current.triggerAttackRelease(note, duration);
     } catch (error) {
       console.error('Error playing note:', error);
     }
@@ -70,11 +61,120 @@ const useFretTone = () => {
 
   // Function to stop all currently playing notes
   const stopAllNotes = useCallback(() => {
-    synth.releaseAll();
+    if (synthRef.current) synthRef.current.releaseAll();
   }, []);
 
   return { playNote, stopAllNotes };
 };
 
+function FretToneControls({ onApply, oscType: initialOscType = 'sawtooth', envelope: initialEnvelope = { attack: 0.005, decay: 0.5, sustain: 0.5, release: 1 } }) {
+  const [oscType, setOscType] = useState(initialOscType);
+  const [envelope, setEnvelope] = useState(initialEnvelope);
+  const synthRef = useRef();
+  const reverbRef = useRef();
+
+  useEffect(() => {
+    synthRef.current = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: oscType },
+      envelope: { ...envelope },
+      filter: { type: 'lowpass', frequency: 2000, rolloff: -12, Q: 1 }
+    }).toDestination();
+    reverbRef.current = new Tone.Reverb({ decay: 2, wet: 0.3 }).toDestination();
+    synthRef.current.connect(reverbRef.current);
+    return () => {
+      synthRef.current.dispose();
+      reverbRef.current.dispose();
+    };
+  }, [oscType, envelope]);
+
+  // If the parent changes the initial values, update local state
+  useEffect(() => { setOscType(initialOscType); }, [initialOscType]);
+  useEffect(() => { setEnvelope(initialEnvelope); }, [initialEnvelope]);
+
+  // Play a test note
+  const playTestNote = () => {
+    if (Tone.context.state !== 'running') return;
+    try { synthRef.current.triggerAttackRelease('C4', '8n'); } catch (e) { console.error(e); }
+  };
+
+  // Envelope slider handler
+  const handleEnvChange = (param, value) => {
+    setEnvelope(env => ({ ...env, [param]: parseFloat(value) }));
+  };
+
+  // Ensure Tone.js is started
+  useEffect(() => {
+    const startAudio = async () => { await Tone.start(); };
+    document.addEventListener('click', startAudio, { once: true });
+    return () => document.removeEventListener('click', startAudio);
+  }, []);
+
+  return (
+    <div className="fret-tone-panel" style={{background:'#222',color:'#eee',padding:'2vmin',borderRadius:'1vmin',maxWidth:400}}>
+      <h3>FretTone Synth Controls</h3>
+      <div style={{marginBottom:'1vmin'}}>
+        <label>Oscillator Type: </label>
+        <select value={oscType} onChange={e => setOscType(e.target.value)}>
+          <option value="sine">Sine</option>
+          <option value="square">Square</option>
+          <option value="sawtooth">Sawtooth</option>
+          <option value="triangle">Triangle</option>
+        </select>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:'1vmin'}}>
+        {['attack','decay','sustain','release'].map(param => (
+          <label key={param} style={{display:'flex',alignItems:'center',gap:'1vmin'}}>
+            {param.charAt(0).toUpperCase()+param.slice(1)}:
+            <input type="range" min={param==='sustain'?0:0.001} max={param==='attack'?0.5:param==='decay'?2:param==='release'?3:1} step={param==='attack'?0.001:0.01} value={envelope[param]} onChange={e=>handleEnvChange(param,e.target.value)} style={{flex:1}} />
+            <span style={{width:40,textAlign:'right'}}>{envelope[param]}</span>
+          </label>
+        ))}
+      </div>
+      <div style={{display:'flex',gap:'1vmin',marginTop:'2vmin'}}>
+        <button onClick={playTestNote}>Play Test Note</button>
+        <button onClick={() => onApply && onApply({ oscType, envelope })}>Apply</button>
+      </div>
+    </div>
+  );
+}
+
+export default function FretTone({ onBack, synthSettings, onApplySynthSettings }) {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      width: '100vw',
+      background: '#1a1a1a',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '4vmin',
+    }}>
+      <button
+        onClick={onBack}
+        style={{
+          alignSelf: 'flex-start',
+          marginBottom: '2vmin',
+          padding: '1vmin 2vmin',
+          fontSize: '2vmin',
+          background: '#444',
+          color: '#eee',
+          border: 'none',
+          borderRadius: '0.5vmin',
+          cursor: 'pointer',
+          boxShadow: '0 2px 8px #0004',
+        }}
+      >
+        ← Return to Splash
+      </button>
+      <FretToneControls
+        onApply={onApplySynthSettings}
+        oscType={synthSettings?.oscType}
+        envelope={synthSettings?.envelope}
+      />
+    </div>
+  );
+}
+
 // Export the hook
-export default useFretTone; 
+export { useFretTone }; 

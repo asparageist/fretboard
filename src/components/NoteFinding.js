@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Fretboard from './Fretboard';
 import './NoteFinding.css';
+import { FretTone } from './FretTone';
 
 const chromatic = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-const NoteFinding = ({ isLeftHanded }) => {
+const NoteFinding = ({ isLeftHanded, synthSettings }) => {
   const [targetNote, setTargetNote] = useState('');
   const [isCorrect, setIsCorrect] = useState(null);
   const [message, setMessage] = useState('');
@@ -49,7 +50,7 @@ const NoteFinding = ({ isLeftHanded }) => {
           <button onClick={handleNextNote} className="next-button">NEXT</button>
         </div>
       </div>
-      <Fretboard onFretClick={handleFretClick} isLeftHanded={isLeftHanded} />
+      <Fretboard onFretClick={handleFretClick} isLeftHanded={isLeftHanded} synthSettings={synthSettings} />
     </div>
   );
 };
