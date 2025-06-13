@@ -17,7 +17,7 @@ const dotFrets = [3, 5, 7, 9, 12];
 
 const chromatic = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-const initialFretWidth = 15; // vmin (was 90px)
+const initialFretWidth = 15; // vmin
 const ratio = 0.95;
 const fretWidths = Array.from({ length: numFrets }, (_, i) => initialFretWidth * Math.pow(ratio, i));
 

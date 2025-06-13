@@ -6,14 +6,15 @@ const useFretTone = () => {
   // Create a synthesizer instance with guitar-like settings
   const synth = new Tone.PolySynth(Tone.Synth, {
     oscillator: {
-      type: 'triangle', // Options: 'sine', 'square', 'sawtooth', 'triangle'
+      type: 'sawtooth', // Options: 'sine', 'square', 'sawtooth', 'triangle'
       // You can also use 'custom' and provide a custom waveform
+      //TODO: add a waveform selector button
     },
     envelope: {
       attack: 0.005,  // Very quick attack for plucked sound
-      decay: 0.1,     // Quick decay
-      sustain: 0.3,   // Moderate sustain
-      release: 0.5    // Moderate release
+      decay: 0.5,     // Quick decay
+      sustain: 0.5,   // Moderate sustain
+      release: 1    // Moderate release
     },
     // Add a filter for more guitar-like tone
     filter: {
@@ -26,7 +27,7 @@ const useFretTone = () => {
 
   // Add some effects for more realistic sound
   const reverb = new Tone.Reverb({
-    decay: 1.5,      // Reverb decay time
+    decay: 2,      // Reverb decay time
     wet: 0.3         // Mix of dry/wet signal
   }).toDestination();
 

@@ -28,6 +28,7 @@ function Splash({ onStart }) {
         </div>
       </div>
       <div className="modeInfo">
+        
         <p>describe the mode</p>
       </div>
     </div>

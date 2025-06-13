@@ -27,31 +27,27 @@ const NoteFinding = ({ isLeftHanded }) => {
     
     if (playedNote === targetNote) {
       setIsCorrect(true);
-      setMessage('Correct!');
-      // Generate new note after a short delay
-      setTimeout(() => {
-        setTargetNote(generateRandomNote());
-        setIsCorrect(null);
-        setMessage('');
-      }, 1500);
+      setMessage('YES');
     } else {
       setIsCorrect(false);
-      setMessage('Try again!');
-      // Clear message after a short delay
-      setTimeout(() => {
-        setIsCorrect(null);
-        setMessage('');
-      }, 1500);
+      setMessage('NO');
     }
+  };
+
+  const handleNextNote = () => {
+    setTargetNote(generateRandomNote());
+    setIsCorrect(null);
+    setMessage('');
   };
 
   return (
     <div className="note-finding-container">
       <div className="target-note">
         <div className={`note-display ${isCorrect ? 'correct' : isCorrect === false ? 'incorrect' : ''}`}>
-          {targetNote}
+          {message && <div className={`feedback ${isCorrect ? 'correct' : 'incorrect'}`}>{message}</div>}
+          <span>{targetNote}</span>
+          <button onClick={handleNextNote} className="next-button">NEXT</button>
         </div>
-        {message && <div className={`feedback ${isCorrect ? 'correct' : 'incorrect'}`}>{message}</div>}
       </div>
       <Fretboard onFretClick={handleFretClick} isLeftHanded={isLeftHanded} />
     </div>
