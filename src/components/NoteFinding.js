@@ -9,6 +9,7 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
   const [targetNote, setTargetNote] = useState('');
   const [isCorrect, setIsCorrect] = useState(null);
   const [message, setMessage] = useState('');
+  const [showNext, setShowNext] = useState(false);
 
   // Generate a random note
   const generateRandomNote = () => {
@@ -20,6 +21,17 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
   useEffect(() => {
     setTargetNote(generateRandomNote());
   }, []);
+
+  // Alternate YES/NEXT text when correct
+  useEffect(() => {
+    let interval;
+    if (isCorrect) {
+      interval = setInterval(() => setShowNext(prev => !prev), 900);
+    } else {
+      setShowNext(false);
+    }
+    return () => clearInterval(interval);
+  }, [isCorrect]);
 
   // Handle fret click
   const handleFretClick = (noteWithOctave) => {
@@ -41,13 +53,26 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
     setMessage('');
   };
 
+  const handleTargetNoteClick = () => {
+    if (isCorrect) {
+      handleNextNote();
+    }
+  };
+
   return (
     <div className="note-finding-container">
-      <div className="target-note">
+      <div
+        className="target-note"
+        onClick={handleTargetNoteClick}
+        style={{ cursor: isCorrect ? 'pointer' : 'default' }}
+      >
         <div className={`note-display ${isCorrect ? 'correct' : isCorrect === false ? 'incorrect' : ''}`}>
-          {message && <div className={`feedback ${isCorrect ? 'correct' : 'incorrect'}`}>{message}</div>}
+          {message && (
+            <div className={`feedback ${isCorrect ? 'correct' : 'incorrect'}`}>
+              {isCorrect ? (showNext ? 'NEXT' : 'YES') : message}
+            </div>
+          )}
           <span>{targetNote}</span>
-          <button onClick={handleNextNote} className="next-button">NEXT</button>
         </div>
       </div>
       <Fretboard onFretClick={handleFretClick} isLeftHanded={isLeftHanded} synthSettings={synthSettings} />
