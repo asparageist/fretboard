@@ -14,7 +14,8 @@
   width: 80vmin;
   height: 80vmin;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -160,4 +161,126 @@
   color: #e0e0e0;
   font-size: 1.1rem;
   font-weight: 500;
+}
+
+.fretboard-labels-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2vmin;
+  margin: 2vmin auto 0 auto;
+  background: #222;
+  border-radius: 0.7vmin;
+  padding: 1vmin 2vmin;
+  box-shadow: 0 2px 8px #0002;
+  max-width: 80vmin;
+  width: fit-content;
+  position: relative;
+  left: 0;
+  right: 0;
+  margin-bottom: 2vmin;
+}
+
+.fretboard-label {
+  color: #b0b8c1;
+  font-size: 2vmin;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.osc-btn {
+  background: none;
+  border: none;
+  color: #4caf50;
+  font-size: 2vmin;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 0.5vmin;
+  border-radius: 0.5vmin;
+  transition: background 0.2s;
+}
+
+.osc-btn:hover, .osc-btn:focus {
+  background: #333;
+}
+
+.osc-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: #23272f;
+  border-radius: 0.7vmin;
+  box-shadow: 0 2px 8px #0006;
+  min-width: 10vmin;
+  z-index: 20;
+  padding: 0.5vmin 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.osc-dropdown-item {
+  color: #eee;
+  padding: 1vmin 2vmin;
+  cursor: pointer;
+  font-size: 2vmin;
+  transition: background 0.2s, color 0.2s;
+}
+
+.osc-dropdown-item:hover {
+  background: #4caf50;
+  color: #222;
+}
+
+.env-btn {
+  background: none;
+  border: none;
+  color: #4caf50;
+  font-size: 2vmin;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 0.5vmin;
+  border-radius: 0.5vmin;
+  transition: background 0.2s;
+}
+
+.env-btn:hover, .env-btn:focus {
+  background: #333;
+}
+
+.env-popover {
+  position: absolute;
+  top: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #23272f;
+  border-radius: 0.7vmin;
+  box-shadow: 0 2px 8px #0006;
+  padding: 1vmin 2vmin;
+  z-index: 20;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1vmin;
+  min-width: 18vmin;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.env-popover.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.env-popover input[type='range'] {
+  flex: 1;
+  accent-color: #4caf50;
+}
+
+.env-value {
+  color: #b0b8c1;
+  font-size: 1.7vmin;
+  margin-left: 1vmin;
+  min-width: 3vmin;
+  text-align: right;
 } 

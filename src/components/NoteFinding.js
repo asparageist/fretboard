@@ -10,6 +10,7 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
   const [isCorrect, setIsCorrect] = useState(null);
   const [message, setMessage] = useState('');
   const [showNext, setShowNext] = useState(false);
+  const [localSynthSettings, setLocalSynthSettings] = useState(synthSettings || { oscType: 'sawtooth', envelope: { attack: 0.005, decay: 0.5, sustain: 0.5, release: 1 } });
 
   // Generate a random note
   const generateRandomNote = () => {
@@ -59,6 +60,16 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
     }
   };
 
+  // Handler to update oscillator type
+  const handleOscTypeChange = (oscType) => {
+    setLocalSynthSettings(prev => ({ ...prev, oscType }));
+  };
+
+  // Handler to update envelope
+  const handleEnvelopeChange = (envelope) => {
+    setLocalSynthSettings(prev => ({ ...prev, envelope }));
+  };
+
   return (
     <div className="note-finding-container">
       <div
@@ -75,7 +86,13 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
           <span>{targetNote}</span>
         </div>
       </div>
-      <Fretboard onFretClick={handleFretClick} isLeftHanded={isLeftHanded} synthSettings={synthSettings} />
+      <Fretboard
+        onFretClick={handleFretClick}
+        isLeftHanded={isLeftHanded}
+        synthSettings={localSynthSettings}
+        onOscTypeChange={handleOscTypeChange}
+        onEnvelopeChange={handleEnvelopeChange}
+      />
     </div>
   );
 };

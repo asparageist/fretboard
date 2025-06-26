@@ -1,5 +1,7 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
 import * as Tone from 'tone';
+import './FretTone.css';
+import Fretboard from './Fretboard';
 
 // Custom hook for audio functionality
 const useFretTone = (synthSettings) => {
@@ -12,7 +14,7 @@ const useFretTone = (synthSettings) => {
     if (reverbRef.current) reverbRef.current.dispose();
     // Create new synth and reverb with current settings
     synthRef.current = new Tone.PolySynth(Tone.Synth, {
-      oscillator: {
+    oscillator: {
         type: synthSettings?.oscType || 'sawtooth',
       },
       envelope: synthSettings?.envelope || {
@@ -21,13 +23,13 @@ const useFretTone = (synthSettings) => {
         sustain: 0.5,
         release: 1,
       },
-      filter: {
-        type: 'lowpass',
+    filter: {
+      type: 'lowpass',
         frequency: 2000,
         rolloff: -12,
         Q: 1
-      }
-    }).toDestination();
+    }
+  }).toDestination();
     reverbRef.current = new Tone.Reverb({ decay: 2, wet: 0.3 }).toDestination();
     synthRef.current.connect(reverbRef.current);
     return () => {
@@ -67,8 +69,7 @@ const useFretTone = (synthSettings) => {
   return { playNote, stopAllNotes };
 };
 
-function FretToneControls({ onApply, oscType: initialOscType = 'sawtooth', envelope: initialEnvelope = { attack: 0.005, decay: 0.5, sustain: 0.5, release: 1 } }) {
-  const [oscType, setOscType] = useState(initialOscType);
+function FretToneControls({ onApply, oscType, envelope: initialEnvelope = { attack: 0.005, decay: 0.5, sustain: 0.5, release: 1 }, onOscEnvChange }) {
   const [envelope, setEnvelope] = useState(initialEnvelope);
   const synthRef = useRef();
   const reverbRef = useRef();
@@ -88,18 +89,12 @@ function FretToneControls({ onApply, oscType: initialOscType = 'sawtooth', envel
   }, [oscType, envelope]);
 
   // If the parent changes the initial values, update local state
-  useEffect(() => { setOscType(initialOscType); }, [initialOscType]);
   useEffect(() => { setEnvelope(initialEnvelope); }, [initialEnvelope]);
-
-  // Play a test note
-  const playTestNote = () => {
-    if (Tone.context.state !== 'running') return;
-    try { synthRef.current.triggerAttackRelease('C4', '8n'); } catch (e) { console.error(e); }
-  };
 
   // Envelope slider handler
   const handleEnvChange = (param, value) => {
     setEnvelope(env => ({ ...env, [param]: parseFloat(value) }));
+    if (onOscEnvChange) onOscEnvChange({ oscType, envelope: { ...envelope, [param]: parseFloat(value) } });
   };
 
   // Ensure Tone.js is started
@@ -110,35 +105,38 @@ function FretToneControls({ onApply, oscType: initialOscType = 'sawtooth', envel
   }, []);
 
   return (
-    <div className="fret-tone-panel" style={{background:'#222',color:'#eee',padding:'2vmin',borderRadius:'1vmin',maxWidth:400}}>
+    <div className="fret-tone-panel">
       <h3>FretTone Synth Controls</h3>
-      <div style={{marginBottom:'1vmin'}}>
-        <label>Oscillator Type: </label>
-        <select value={oscType} onChange={e => setOscType(e.target.value)}>
-          <option value="sine">Sine</option>
-          <option value="square">Square</option>
-          <option value="sawtooth">Sawtooth</option>
-          <option value="triangle">Triangle</option>
-        </select>
-      </div>
       <div style={{display:'flex',flexDirection:'column',gap:'1vmin'}}>
         {['attack','decay','sustain','release'].map(param => (
-          <label key={param} style={{display:'flex',alignItems:'center',gap:'1vmin'}}>
+          <label key={param} className="slider-label">
             {param.charAt(0).toUpperCase()+param.slice(1)}:
-            <input type="range" min={param==='sustain'?0:0.001} max={param==='attack'?0.5:param==='decay'?2:param==='release'?3:1} step={param==='attack'?0.001:0.01} value={envelope[param]} onChange={e=>handleEnvChange(param,e.target.value)} style={{flex:1}} />
+            <input type="range" min={param==='sustain'?0:0.001} max={param==='attack'?0.5:param==='decay'?2:param==='release'?3:1} step={param==='attack'?0.001:0.01} value={envelope[param]} onChange={e=>handleEnvChange(param,e.target.value)} />
             <span style={{width:40,textAlign:'right'}}>{envelope[param]}</span>
           </label>
         ))}
       </div>
       <div style={{display:'flex',gap:'1vmin',marginTop:'2vmin'}}>
-        <button onClick={playTestNote}>Play Test Note</button>
         <button onClick={() => onApply && onApply({ oscType, envelope })}>Apply</button>
       </div>
     </div>
   );
 }
 
-export default function FretTone({ onBack, synthSettings, onApplySynthSettings }) {
+export default function FretTone({ onBack, synthSettings, onApplySynthSettings, isLeftHanded }) {
+  const [localSynthSettings, setLocalSynthSettings] = useState(synthSettings);
+  useEffect(() => { setLocalSynthSettings(synthSettings); }, [synthSettings]);
+
+  // Oscillator type state is now managed here
+  const [oscType, setOscType] = useState(localSynthSettings?.oscType || 'sawtooth');
+  useEffect(() => { setOscType(localSynthSettings?.oscType || 'sawtooth'); }, [localSynthSettings]);
+
+  // Update localSynthSettings when oscType changes
+  const handleOscTypeChange = (value) => {
+    setOscType(value);
+    setLocalSynthSettings(s => ({ ...s, oscType: value }));
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -167,14 +165,25 @@ export default function FretTone({ onBack, synthSettings, onApplySynthSettings }
       >
         ← Return to Splash
       </button>
+      <div style={{marginBottom:'2vmin', background:'#23272f', borderRadius:'0.7vmin', padding:'1vmin 2vmin', boxShadow:'0 2px 8px #0002'}}>
+        <label style={{fontSize:'2vmin', color:'#b0b8c1'}}>Oscillator Type: </label>
+        <select value={oscType} onChange={e => handleOscTypeChange(e.target.value)} style={{fontSize:'2vmin', marginLeft:'1vmin', background:'#2d313a', color:'#eee', border:'1px solid #444', borderRadius:'0.5vmin', padding:'0.5vmin 1vmin'}}>
+          <option value="sine">Sine</option>
+          <option value="square">Square</option>
+          <option value="sawtooth">Sawtooth</option>
+          <option value="triangle">Triangle</option>
+        </select>
+      </div>
       <FretToneControls
         onApply={onApplySynthSettings}
-        oscType={synthSettings?.oscType}
-        envelope={synthSettings?.envelope}
+        oscType={oscType}
+        envelope={localSynthSettings?.envelope}
+        onOscEnvChange={setLocalSynthSettings}
       />
+      <div style={{marginTop: '4vmin'}}>
+        <Fretboard synthSettings={localSynthSettings} isLeftHanded={isLeftHanded} />
+      </div>
     </div>
   );
 }
-
-// Export the hook
 export { useFretTone }; 

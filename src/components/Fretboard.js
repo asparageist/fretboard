@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Fretboard.css';
 import { useFretTone } from './FretTone';
 
@@ -35,9 +35,19 @@ function getNoteWithOctave(openNote, openOctave, fret) {
   return chromatic[currentIndex] + octave;
 }
 
-const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synthSettings }) => {
+const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synthSettings, onOscTypeChange, onEnvelopeChange }) => {
   const [leftHanded] = useState(initialLeftHanded);
   const { playNote } = useFretTone(synthSettings);
+  const [oscDropdownOpen, setOscDropdownOpen] = useState(false);
+  const [oscType, setOscType] = useState(synthSettings?.oscType || 'sawtooth');
+  const [envPopover, setEnvPopover] = useState(null); // 'attack', 'decay', 'sustain', 'release' or null
+  const [envFadeOut, setEnvFadeOut] = useState(false);
+  const fadeTimeoutRef = useRef();
+  const [envelope, setEnvelope] = useState(synthSettings?.envelope || { attack: 0.005, decay: 0.5, sustain: 0.5, release: 1 });
+
+  useEffect(() => {
+    setEnvelope(synthSettings?.envelope || { attack: 0.005, decay: 0.5, sustain: 0.5, release: 1 });
+  }, [synthSettings]);
 
   // Mirror fret number for left-handed mode
   const handleFretClick = (stringIndex, logicalFret) => {
@@ -76,6 +86,27 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synth
 
   // Determine which fret should have double dots
   const doubleDotFret = leftHanded ? numFrets - 1 - 12 : 12;
+
+  const handleOscTypeSelect = (type) => {
+    setOscType(type);
+    setOscDropdownOpen(false);
+    if (onOscTypeChange) onOscTypeChange(type);
+  };
+
+  const handleEnvChange = (param, value) => {
+    const newEnv = { ...envelope, [param]: parseFloat(value) };
+    setEnvelope(newEnv);
+    if (onEnvelopeChange) onEnvelopeChange(newEnv);
+    setEnvFadeOut(true);
+    fadeTimeoutRef.current = setTimeout(() => {
+      setEnvPopover(null);
+      setEnvFadeOut(false);
+    }, 300); // match CSS transition
+  };
+
+  useEffect(() => {
+    return () => clearTimeout(fadeTimeoutRef.current);
+  }, []);
 
   return (
     <div className="fretboard-container">
@@ -132,12 +163,56 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synth
                   );
                 })}
               </div>
+              
+            </div>
+            
+          ))}
+          
+        </div>
+        <div className="fretboard-labels-container">
+          <div className="fretboard-label-oscillator" style={{ position: 'relative' }}>
+            <button className="fretboard-label osc-btn" onClick={() => setOscDropdownOpen(v => !v)}>
+              Oscillator
+            </button>
+            {oscDropdownOpen && (
+              <div className="osc-dropdown">
+                {['sine','square','sawtooth','triangle'].map(type => (
+                  <div key={type} className="osc-dropdown-item" onClick={() => handleOscTypeSelect(type)}>
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {['attack','decay','sustain','release'].map(param => (
+            <div key={param} className="fretboard-label-env" style={{ position: 'relative' }}>
+              <button className="fretboard-label env-btn" onClick={() => setEnvPopover(envPopover === param ? null : param)}>
+                {param.charAt(0).toUpperCase() + param.slice(1)}
+              </button>
+              {envPopover === param && (
+                <div className={`env-popover${envFadeOut ? ' fade-out' : ''}`}>
+                  <input
+                    type="range"
+                    min={param === 'sustain' ? 0 : 0.001}
+                    max={param === 'attack' ? 0.5 : param === 'decay' ? 2 : param === 'release' ? 3 : 1}
+                    step={param === 'attack' ? 0.001 : 0.01}
+                    value={envelope[param]}
+                    onChange={e => handleEnvChange(param, e.target.value)}
+                  />
+                  <span className="env-value">{envelope[param]}</span>
+                </div>
+              )}
             </div>
           ))}
         </div>
+
       </div>
+      
     </div>
+    
   );
+  
 };
+
 
 export default Fretboard; 

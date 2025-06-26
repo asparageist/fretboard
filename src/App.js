@@ -26,7 +26,7 @@ function App() {
         ) : options.mode === 'find' ? (
           <NoteFinding isLeftHanded={options.isLeftHanded} synthSettings={synthSettings} />
         ) : options.mode === 'tone' ? (
-          <FretTone onBack={() => setShowMain(false)} synthSettings={synthSettings} onApplySynthSettings={handleApplySynthSettings} />
+          <FretTone onBack={() => setShowMain(false)} synthSettings={synthSettings} onApplySynthSettings={handleApplySynthSettings} isLeftHanded={options.isLeftHanded} />
         ) : (
           <div className="coming-soon">Identify Notes Component (Coming Soon)</div>
         )}

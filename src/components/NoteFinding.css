@@ -10,11 +10,11 @@
   overflow: hidden;
 }
 
+.note-finding-container .fretboard-content {
+  margin-top: 12vmin;
+}
+
 .target-note {
-  position: absolute;
-  top: 2vmin;
-  left: 50%;
-  transform: translateX(-50%);
   text-align: center;
   padding: 2vmin;
   background-color: #2d2d2d;
@@ -22,6 +22,7 @@
   width: 100%;
   max-width: 80vmin;
   z-index: 10;
+  margin-bottom: 2vmin;
 }
 
 .target-note h2 {
