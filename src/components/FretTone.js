@@ -14,7 +14,7 @@ const useFretTone = (synthSettings) => {
     if (reverbRef.current) reverbRef.current.dispose();
     // Create new synth and reverb with current settings
     synthRef.current = new Tone.PolySynth(Tone.Synth, {
-    oscillator: {
+      oscillator: {
         type: synthSettings?.oscType || 'sawtooth',
       },
       envelope: synthSettings?.envelope || {
@@ -23,13 +23,13 @@ const useFretTone = (synthSettings) => {
         sustain: 0.5,
         release: 1,
       },
-    filter: {
-      type: 'lowpass',
+      filter: {
+        type: 'lowpass',
         frequency: 2000,
         rolloff: -12,
         Q: 1
-    }
-  }).toDestination();
+      }
+    }).toDestination();
     reverbRef.current = new Tone.Reverb({ decay: 2, wet: 0.3 }).toDestination();
     synthRef.current.connect(reverbRef.current);
     return () => {

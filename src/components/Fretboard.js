@@ -3,7 +3,6 @@ import './Fretboard.css';
 import { useFretTone } from './FretTone';
 
 const strings = ['E', 'A', 'D', 'G', 'B', 'e'];
-const openNotes = ['E', 'A', 'D', 'G', 'B', 'E'];
 const stringTunings = [
   { note: 'E', octave: 2 },
   { note: 'A', octave: 2 },
@@ -49,42 +48,31 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synth
     setEnvelope(synthSettings?.envelope || { attack: 0.005, decay: 0.5, sustain: 0.5, release: 1 });
   }, [synthSettings]);
 
-  // Mirror fret number for left-handed mode
   const handleFretClick = (stringIndex, logicalFret) => {
     const { note, octave } = stringTunings[stringIndex];
     const noteWithOctave = getNoteWithOctave(note, octave, logicalFret);
-    console.log(`String ${strings[stringIndex]}, Fret ${logicalFret}: ${noteWithOctave}`);
-    
-    // Play the note
     playNote(noteWithOctave);
-    
-    // Call the parent's onFretClick if provided
     if (onFretClick) {
       onFretClick(noteWithOctave);
     }
   };
 
-  // For left-handed
   const displayFretWidths = leftHanded ? [...fretWidths].reverse() : fretWidths;
 
-  // Calculate dots from left
-  const getFretLefts = (widths, leftPad = 1) => // adjust them dots
+  const getFretLefts = (widths, leftPad = 1) =>
     widths.reduce((acc, width, i) => {
       acc.push((acc[i - 1] || leftPad) + (i > 0 ? widths[i - 1] : 0));
       return acc;
     }, []);
   const displayFretLefts = getFretLefts(displayFretWidths);
 
-  // For dot vertical position
-  const stringHeight = 6; // vmin (was 40px)
+  const stringHeight = 6; // vmin
   const dotY = (3 * stringHeight + 0.6); // vmin
 
-  // Adjust dots for left-handed mode
   const displayDotFrets = leftHanded
     ? dotFrets.map(f => numFrets - 1 - f)
     : dotFrets;
 
-  // Determine which fret should have double dots
   const doubleDotFret = leftHanded ? numFrets - 1 - 12 : 12;
 
   const handleOscTypeSelect = (type) => {
@@ -101,7 +89,7 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synth
     fadeTimeoutRef.current = setTimeout(() => {
       setEnvPopover(null);
       setEnvFadeOut(false);
-    }, 300); // match CSS transition
+    }, 300);
   };
 
   useEffect(() => {
@@ -163,11 +151,8 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synth
                   );
                 })}
               </div>
-              
             </div>
-            
           ))}
-          
         </div>
         <div className="fretboard-labels-container">
           <div className="fretboard-label-oscillator" style={{ position: 'relative' }}>
@@ -205,14 +190,9 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synth
             </div>
           ))}
         </div>
-
       </div>
-      
     </div>
-    
   );
-  
 };
-
 
 export default Fretboard; 

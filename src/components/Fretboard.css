@@ -191,8 +191,8 @@
 .osc-btn {
   background: none;
   border: none;
-  color: #4caf50;
-  font-size: 2vmin;
+  color: #4CAF50;
+  font-size: 3vmin;
   font-weight: 600;
   cursor: pointer;
   padding: 0 0.5vmin;
@@ -223,7 +223,7 @@
   color: #eee;
   padding: 1vmin 2vmin;
   cursor: pointer;
-  font-size: 2vmin;
+  font-size: 3vmin;
   transition: background 0.2s, color 0.2s;
 }
 
@@ -236,7 +236,7 @@
   background: none;
   border: none;
   color: #4caf50;
-  font-size: 2vmin;
+  font-size: 3vmin;
   font-weight: 600;
   cursor: pointer;
   padding: 0 0.5vmin;

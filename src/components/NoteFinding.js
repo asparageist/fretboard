@@ -12,18 +12,15 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
   const [showNext, setShowNext] = useState(false);
   const [localSynthSettings, setLocalSynthSettings] = useState(synthSettings || { oscType: 'sawtooth', envelope: { attack: 0.005, decay: 0.5, sustain: 0.5, release: 1 } });
 
-  // Generate a random note
   const generateRandomNote = () => {
     const randomIndex = Math.floor(Math.random() * chromatic.length);
     return chromatic[randomIndex];
   };
 
-  // Initialize with a random note
   useEffect(() => {
     setTargetNote(generateRandomNote());
   }, []);
 
-  // Alternate YES/NEXT text when correct
   useEffect(() => {
     let interval;
     if (isCorrect) {
@@ -34,11 +31,8 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
     return () => clearInterval(interval);
   }, [isCorrect]);
 
-  // Handle fret click
   const handleFretClick = (noteWithOctave) => {
-    // Extract the note without octave (e.g., 'C4' -> 'C')
     const playedNote = noteWithOctave.replace(/[0-9]/g, '');
-    
     if (playedNote === targetNote) {
       setIsCorrect(true);
       setMessage('YES');
@@ -60,12 +54,10 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
     }
   };
 
-  // Handler to update oscillator type
   const handleOscTypeChange = (oscType) => {
     setLocalSynthSettings(prev => ({ ...prev, oscType }));
   };
 
-  // Handler to update envelope
   const handleEnvelopeChange = (envelope) => {
     setLocalSynthSettings(prev => ({ ...prev, envelope }));
   };

@@ -7,7 +7,6 @@ function Splash({ onStart }) {
   const [activeButton, setActiveButton] = useState(null); // 'find' or 'identify' or null
   const findBtnRef = useRef(null);
   const identifyBtnRef = useRef(null);
-  const toneBtnRef = useRef(null);
 
   useEffect(() => {
     if (!activeButton) return;
@@ -15,7 +14,6 @@ function Splash({ onStart }) {
       let btnRef = null;
       if (activeButton === 'find') btnRef = findBtnRef;
       else if (activeButton === 'identify') btnRef = identifyBtnRef;
-      else if (activeButton === 'tone') btnRef = toneBtnRef;
       if (btnRef && btnRef.current && !btnRef.current.contains(e.target)) {
         setActiveButton(null);
       }
@@ -46,21 +44,6 @@ function Splash({ onStart }) {
             </button>
           </div>
           <div className="button-container">
-            {activeButton === 'tone' && (
-              <span className="begin-prompt">BEGIN</span>
-            )}
-            <button
-              ref={toneBtnRef}
-              className={`mode-button${activeButton === 'tone' ? ' active' : ''}`}
-              onClick={() => handleButtonClick('tone')}
-            >
-              <span className="button-label">Adjust Tone</span>
-              <div className="modeInfo">
-                <p>{activeButton === 'tone' ? 'Adjust the tone of the oscillator synth' : ''}</p>
-              </div>
-            </button>
-          </div>
-          <div className="button-container">
             {activeButton === 'find' && (
               <span className="begin-prompt">BEGIN</span>
             )}
@@ -76,7 +59,6 @@ function Splash({ onStart }) {
             </button>
           </div>
           <div className="button-container">
-            
             {activeButton === 'identify' && (
               <span className="begin-prompt">BEGIN</span>
             )}
@@ -96,7 +78,5 @@ function Splash({ onStart }) {
     </div>
   );
 }
-{/* <FretTone onApply={handleFretToneApply} /> */}
-//use above for the synth settings page
 
 export default Splash; 
