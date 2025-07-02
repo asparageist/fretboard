@@ -103,4 +103,26 @@
 
 .target-note > .note-display > .next-button:active {
   transform: scale(0.95);
+}
+
+.note-finding-container .back-to-splash-btn {
+  position: absolute;
+  top: 2vmin;
+  left: 40vmin;
+  z-index: 10;
+  padding: 8vmin 10vmin !important;
+  font-size: 4vmin !important;
+  background: none !important;
+  color: #4caf50 !important;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5vmin;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background 0.2s;
+}
+
+.note-finding-container .back-to-splash-btn:hover,
+.note-finding-container .back-to-splash-btn:focus {
+  background: #333 !important;
 } 

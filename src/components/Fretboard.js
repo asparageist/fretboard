@@ -85,6 +85,9 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synth
     const newEnv = { ...envelope, [param]: parseFloat(value) };
     setEnvelope(newEnv);
     if (onEnvelopeChange) onEnvelopeChange(newEnv);
+  };
+
+  const handleEnvSliderRelease = () => {
     setEnvFadeOut(true);
     fadeTimeoutRef.current = setTimeout(() => {
       setEnvPopover(null);
@@ -183,6 +186,8 @@ const Fretboard = ({ isLeftHanded: initialLeftHanded = false, onFretClick, synth
                     step={param === 'attack' ? 0.001 : 0.01}
                     value={envelope[param]}
                     onChange={e => handleEnvChange(param, e.target.value)}
+                    onMouseUp={handleEnvSliderRelease}
+                    onTouchEnd={handleEnvSliderRelease}
                   />
                   <span className="env-value">{envelope[param]}</span>
                 </div>

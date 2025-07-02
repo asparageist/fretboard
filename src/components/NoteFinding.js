@@ -5,7 +5,7 @@ import { FretTone } from './FretTone';
 
 const chromatic = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-const NoteFinding = ({ isLeftHanded, synthSettings }) => {
+const NoteFinding = ({ isLeftHanded, synthSettings, onBack }) => {
   const [targetNote, setTargetNote] = useState('');
   const [isCorrect, setIsCorrect] = useState(null);
   const [message, setMessage] = useState('');
@@ -64,6 +64,24 @@ const NoteFinding = ({ isLeftHanded, synthSettings }) => {
 
   return (
     <div className="note-finding-container">
+      <button
+        className="back-to-splash-btn"
+        onClick={() => onBack && onBack(localSynthSettings)}
+        style={{
+          alignSelf: 'flex-start',
+          margin: '2vmin',
+          padding: '1vmin 2vmin',
+          fontSize: '2vmin',
+          background: '#444',
+          color: '#eee',
+          border: 'none',
+          borderRadius: '0.5vmin',
+          cursor: 'pointer',
+          boxShadow: '0 2px 8px #0004',
+        }}
+      >
+        BACK
+      </button>
       <div
         className="target-note"
         onClick={handleTargetNoteClick}

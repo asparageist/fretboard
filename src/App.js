@@ -18,13 +18,22 @@ function App() {
     setSynthSettings(settings);
   };
 
+  const handleBackToSplash = (newSynthSettings) => {
+    if (newSynthSettings) setSynthSettings(newSynthSettings);
+    setShowMain(false);
+  };
+
   return (
     <div className="App">
       <main>
         {!showMain ? (
           <Splash onStart={handleStart} />
         ) : options.mode === 'find' ? (
-          <NoteFinding isLeftHanded={options.isLeftHanded} synthSettings={synthSettings} />
+          <NoteFinding
+            isLeftHanded={options.isLeftHanded}
+            synthSettings={synthSettings}
+            onBack={handleBackToSplash}
+          />
         ) : options.mode === 'tone' ? (
           <FretTone onBack={() => setShowMain(false)} synthSettings={synthSettings} onApplySynthSettings={handleApplySynthSettings} isLeftHanded={options.isLeftHanded} />
         ) : (
